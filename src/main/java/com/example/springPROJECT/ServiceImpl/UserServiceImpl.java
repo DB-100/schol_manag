@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.example.springPROJECT.Entity.User;
 import com.example.springPROJECT.Repository.UserRepository;
 import com.example.springPROJECT.Service.UserService;
+import com.example.springPROJECT.exceptions.ResourceNotFoundException;
 import com.example.springPROJECT.payloads.UserDto;
 
 public class UserServiceImpl implements UserService {
@@ -24,18 +25,18 @@ public class UserServiceImpl implements UserService {
         return this.userToDto(savedUser);
     }
 
-    @Override
-    public UserDto updateUser(UserDto userDto, Integer userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            BeanUtils.copyProperties(userDto, user);
-            userRepository.save(user);
-            return userDto;
-        } else {
-            throw new IllegalArgumentException("User not found with ID: " + userId);
-        }
-    }
+    // @Override
+    // public UserDto updateUser(UserDto userDto, Integer userId) {
+    //   User user = this.userRepository.findById(userId).orElseThrow(e-> new ResourceNotFoundEsception("User","id", userId));
+    // }
+    
+@Override
+public UserDto updateUser(UserDto userDto, Integer userId) {
+    User user = this.userRepository.findById(userId)
+                                   .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+    return null;
+}
 
     @Override
     public UserDto getUserById(Integer userId) {
@@ -85,4 +86,5 @@ public class UserServiceImpl implements UserService {
         return userDto;
 
     }
+   
 }
